@@ -2,15 +2,15 @@ import {ICommand} from "./ICommand";
 import {PromiseManager} from './PromiseManager'
 
 export class Resonate<T> {
-    private readonly resonateServer: PromiseManager;
+    private readonly promiseManager: PromiseManager;
     private readonly id: string;
     private rootContext: Context<T>;
     public functions:  { [key: string]: any } = {};
 
     constructor (href: string, id: string) {
-        this.resonateServer = new PromiseManager(href);
+        this.promiseManager = new PromiseManager(href);
         this.id = id;
-        this.rootContext = new Context(this.resonateServer, this.id);
+        this.rootContext = new Context(this.promiseManager, this.id);
     }
 
     async registerFunction(func: Function, params: any): Promise<any> {
@@ -23,7 +23,7 @@ export class Resonate<T> {
 
     async executeFunction(func: Function, id: string, params: any): Promise<any> {
         const asCommand = {functionName: func.name, args: params};
-        const subContext = new Context(this.resonateServer, `${this.id}.${id}`, asCommand);
+        const subContext = new Context(this.promiseManager, `${this.id}.${id}`, asCommand);
         return await subContext.bindToDurablePromise(func, params, 60 * 60 * 1000);
     }
 

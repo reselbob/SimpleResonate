@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import {logger} from "../logger";
+import {Logger} from "../logger";
 import {Context, Resonate} from "../lib/Resonate";
 import path from "path";
 import * as dotenv from 'dotenv';
@@ -9,12 +9,19 @@ const d = path.join(__dirname, '.env');
 dotenv.config({path: d});
 
 export class Functions {
-    public async sayHello(context: Context<any>, name: string): Promise<void> {
-        logger.info`$ Hello {name}`;
+
+    private logger = new Logger()
+
+    public async sayHello(context: Context<any>, param: any): Promise<void> {
+        this.logger.logInfo(`Starting sayHello for ${param.name}`);
+        this.logger.logInfo(`Hello ${param.name}}`);
+        this.logger.logInfo(`Finished sayHello for ${param.name}`);
     }
 
-    public async sayGoodbye(context: Context<any>, name: string): Promise<void> {
-        logger.info`$ Goodbye {name}`
+    public async sayGoodbye(context: Context<any>, param: any): Promise<void> {
+        this.logger.logInfo(`Starting sayGoodbye for ${param.name}`);
+        this.logger.logInfo(`Goodbye ${param.name}`);
+        this.logger.logInfo(`Finished sayGoodbye for ${param.name}`);
     }
 
     public static async getRegisteredFunctions(): Promise<Array<IFunctionProfile<any>>> {

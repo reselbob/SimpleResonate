@@ -1,24 +1,45 @@
-import {createLogger, format, transports} from 'winston';
-const {combine, timestamp, prettyPrint, splat, printf} = format;
+import winston, { format }  from 'winston';
+import fs from 'fs';
 
-/**
- * This code configures the format of log entries that will
- * be emitted by the Winston logger
- */
+export class Logger {
+    private logger: winston.Logger;
+    private logFilePath = './'
 
-const myFormat = printf(info => {
-    // This will customize the Error Message
-    if(info instanceof Error) {
-        return `${info.level}: ${info.message} ${info.stack}`;
+    constructor() {
+        // Create a log directory if it doesn't exist
+        if (!fs.existsSync(this.logFilePath)) {
+            fs.mkdirSync(this.logFilePath);
+        }
+
+        this.logger = winston.createLogger({
+            level: 'info',
+            format: format.combine(
+                format.timestamp(),
+                format.errors({ stack: true }), // Enable capturing stack traces
+                format.json(), // Format log entries as JSON
+                format.printf(({ timestamp, level, message, stack, ...rest }) => {
+                    return JSON.stringify({
+                        timestamp,
+                        level,
+                        message,
+                        stack: stack || '',
+                        ...rest,
+                    });
+                })
+            ),
+            transports: [
+                new winston.transports.File({ filename: `${this.logFilePath}/error.log`, level: 'error' }),
+                new winston.transports.File({ filename: `${this.logFilePath}/combined.log` }),
+                new winston.transports.Console(), // Add console transport
+            ],
+        });
     }
-    return `${info.level}: ${info.message}`;
-});
 
-export const logger = createLogger({
-    level: 'info',
-    handleExceptions: true,
-    format: combine(timestamp(), prettyPrint(), splat(), myFormat),
-    transports: [new transports.Console()],
-    exitOnError: false,
-})
+    public logInfo(message: string) {
+        this.logger.info(message);
+    }
 
+    public logError(error: Error) {
+        this.logger.error(error.message, { stack: error.stack });
+    }
+}

@@ -1,7 +1,8 @@
-import {logger} from "../logger";
+import {Logger} from "../logger";
 
 export class PromiseManager {
-    private baseUrl: string
+    private readonly baseUrl: string
+    private logger = new Logger()
 
     constructor(baseUrl = '/') {
         this.baseUrl = baseUrl;
@@ -80,7 +81,7 @@ export class PromiseManager {
                 data.value.data = JSON.parse(atob(data.value.data));
             }
         }catch(error: any){
-            logger.error(error);
+            this.logger.logError(error);
         }
 
         return data;

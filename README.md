@@ -12,3 +12,12 @@ curl --location 'http://localhost:8089/sayHello/123' \
     "name": "Bob"
 }'
 ```
+
+
+```bash
+curl --location 'http://localhost:8089/sayGoodbye/123' \
+--header 'Content-Type: application/json' \
+--data '{
+    "name": "Bob"
+}'
+```

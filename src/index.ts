@@ -4,17 +4,20 @@ import {Functions} from './business/Functions';
 import bodyParser from "body-parser";
 import path from "path";
 import * as dotenv from 'dotenv';
-import {logger} from "./logger";
+import {Logger} from "./logger";
 import {IFunctionProfile} from "./lib/IFunctionProfile";
 
 const app: Express = express();
 app.use(bodyParser.json());
+
+const logger = new Logger()
 
 const d = path.join(__dirname, '.env');
 dotenv.config({path: d});
 
 const port = process.env.SERVER_PORT || "8080"
 
+logger.logInfo(`Server running on port ${port}`);
 app.listen(port, () => console.log(`Server running on port ${port}`));
 
 app.get('/ping/:userName', async (req, res) => {
