@@ -47,7 +47,7 @@ export class PromiseManager {
     async cancelPromise(id: string, value: any) {
         value.data = value.data ? btoa(JSON.stringify(value.data)) : value.data;
 
-        const response = await fetch(`${this.baseUrl}/promises${id}/cancel`, {
+        const response = await fetch(`${this.baseUrl}/promises/${id}/cancel`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -66,7 +66,7 @@ export class PromiseManager {
     async resolvePromise(id: string, value: any) {
         value.data = value.data ? btoa(JSON.stringify(value.data)) : value.data;
 
-        const response = await fetch(`${this.baseUrl}/promises${id}/resolve`, {
+        const response = await fetch(`${this.baseUrl}/promises/${id}/resolve`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
