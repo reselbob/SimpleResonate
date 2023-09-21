@@ -74,6 +74,8 @@ export class PromiseManager {
             body: JSON.stringify({id: id, value: value})
         });
 
+        this.logger.logInfo(`The response status from Go server resolve is ${response.status}`)
+
         let data:any;
         try{
             data = await response.json();
