@@ -1,9 +1,10 @@
 import winston, { format }  from 'winston';
 import fs from 'fs';
 
+
 export class Logger {
     private logger: winston.Logger;
-    private logFilePath = './'
+    private logFilePath = './logs'
 
     constructor() {
         // Create a log directory if it doesn't exist
@@ -17,12 +18,13 @@ export class Logger {
                 format.timestamp(),
                 format.errors({ stack: true }), // Enable capturing stack traces
                 format.json(), // Format log entries as JSON
-                format.printf(({ timestamp, level, message, stack, ...rest }) => {
+                format.printf(({ timestamp, level, message, stack,caller, ...rest }) => {
                     return JSON.stringify({
                         timestamp,
                         level,
                         message,
                         stack: stack || '',
+                        caller,
                         ...rest,
                     });
                 })
@@ -42,4 +44,5 @@ export class Logger {
     public logError(error: Error) {
         this.logger.error(error.message, { stack: error.stack });
     }
+
 }
