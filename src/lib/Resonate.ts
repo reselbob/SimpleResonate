@@ -13,18 +13,14 @@ export class Resonate<T> {
         this.rootContext = new Context(this.promiseManager, this.id);
     }
 
-    async registerFunction(func: Function, params: any): Promise<any> {
-        if (typeof func !== 'function') {
-            throw new Error("Expected a function for registration");
-        }
-        const functionName: string = func.name
-        this.functions[functionName] = func;
+    registerFunction<I, O>(name : string, func: (c : Context<I>, p : I) => Promise<O>): void {
+        this.functions[name] = func;
     }
 
-    async executeFunction(func: Function, id: string, params: any): Promise<any> {
-        const asCommand = {functionName: func.name, args: params};
+    async executeFunction(name: string, id: string, params: any): Promise<any> {
+        const asCommand = {functionName: name, args: params};
         const subContext = new Context(this.promiseManager, `${this.id}.${id}`, asCommand);
-        return await subContext.bindToDurablePromise(func, params, 60 * 60 * 1000);
+        return await subContext.bindToDurablePromise(this.functions[name], params, 60 * 60 * 1000);
     }
 
     recover() {
