@@ -15,4 +15,10 @@ async function sayGoodbye(context: Context<{ name : string }>, param: { name : s
     logger.logInfo(`Finished sayGoodbye for ${param.name}`);
 }
 
-export {sayHello, sayGoodbye}
+async function sayHelloThenGoodbye(context: Context<{ name : string }>, param: { name : string }): Promise<void> {
+    context.newPromise(sayHello, param);
+    context.newPromise(sayGoodbye, param);
+}
+
+
+export {sayHello, sayGoodbye, sayHelloThenGoodbye}

@@ -17,6 +17,12 @@ export class Resonate<T> {
         this.functions[name] = func;
     }
 
+    registerModule(module: any): void {
+        for (let key in module) {
+            this.functions[key] = module[key];
+        }
+    }
+
     async executeFunction(name: string, id: string, params: any): Promise<any> {
         const asCommand = {functionName: name, args: params};
         const subContext = new Context(this.promiseManager, `${this.id}.${id}`, asCommand);
