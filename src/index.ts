@@ -1,12 +1,11 @@
-import express, { Express, Request, Response } from 'express';
+import express, { Express } from 'express';
 import {Resonate} from './lib/Resonate';
-//import {sayHello, sayGoodbye, sayHelloThenGoodbye} from './business/Functions';
 import * as functions from './business/Functions';
 import bodyParser from "body-parser";
 import path from "path";
 import * as dotenv from 'dotenv';
 import {Logger} from "./logger";
-import {IFunctionProfile} from "./lib/IFunctionProfile";
+
 
 const app: Express = express();
 app.use(bodyParser.json());
@@ -19,7 +18,7 @@ dotenv.config({path: d});
 const port = process.env.SERVER_PORT || "8089"
 
 logger.logInfo(`Server running on port ${port}`);
-app.listen(port, () => console.log(`Server running on port ${port}`));
+const server = app.listen(port, () => console.log(`Server running on port ${port}`));
 
 app.get('/ping/:userName', async (req, res) => {
     const { userName } = req.params;
@@ -31,19 +30,15 @@ const appName = process.env.APP_NAME || "myCoolApp";
 
 const resonate = new Resonate(resonateURl, appName);
 
-//resonate.registerFunction<{ name : string }, void>("sayHello", sayHello);
-//resonate.registerFunction<{ name : string }, void>("sayGoodbye", sayGoodbye);
-//resonate.registerFunction<{ name : string }, void>("sayHelloThenGoodbye", sayHelloThenGoodbye);
-
 resonate.registerModule(functions);
 
 
-app.post('/:functionName/:id', async (req, res) => {
+ app.post('/:functionName/:id', async (req, res) => {
     const { id } = req.params;
     const { functionName } = req.params;
 
     const params = req.body;
-    
+
 
     try {
         let conf = await resonate.executeFunction(functionName, id, params);
@@ -57,4 +52,10 @@ app.post('/:functionName/:id', async (req, res) => {
     }
 
 });
+
+const stopServer = async () => {
+    server.close();
+}
+
+export { app, stopServer };
 
