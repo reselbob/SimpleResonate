@@ -17,6 +17,38 @@ describe('Server Tests', () => {
         done();
     });
 
+    it('Can execute replay', async () => {
+        const numberOfReps = 10;
+
+        // Helper function to make requests and assert responses
+        const makeRequestAndAssert = async (url: string) => {
+            const ikey = uuidv4();
+            const postUrl = `${url}${ikey}`
+            const response = await server
+                .post(postUrl)
+                .send({
+                    name: 'Bob',
+                })
+                .set('Content-Type', 'application/json');
+
+            assert.strictEqual(response.status, 200);
+            assert.strictEqual(response.body.message.ikey.includes(ikey), true);
+        };
+
+        // Create sayHello() calls
+        for (let i = 0; i < numberOfReps; i++) {
+            await makeRequestAndAssert(`/sayHello/`);
+        }
+
+        // Create sayGoodBye() calls
+        for (let i = 0; i < numberOfReps; i++) {
+            await makeRequestAndAssert(`/sayGoodbye/`);
+        }
+
+        //TODO: put in the replay logic and test therein
+    }).timeout(5000);
+
+
     it('should respond to /sayHello/:id with the correct message', async () => {
         const ikey = uuidv4()
         const myUrl = `/sayHello/${ikey}`
