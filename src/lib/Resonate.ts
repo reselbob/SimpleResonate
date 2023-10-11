@@ -13,10 +13,6 @@ export class Resonate<T> {
         this.rootContext = new Context(this.promiseManager, this.id);
     }
 
-    registerFunction<I, O>(name : string, func: (c : Context<I>, p : I) => Promise<O>): void {
-        this.functions[name] = func;
-    }
-
     registerModule(module: any): void {
         for (let key in module) {
             this.functions[key] = module[key];
@@ -26,7 +22,8 @@ export class Resonate<T> {
     async executeFunction(name: string, id: string, params: any): Promise<any> {
         const asCommand = {functionName: name, args: params};
         const subContext = new Context(this.promiseManager, `${this.id}.${id}`, asCommand);
-        return await subContext.bindToDurablePromise(this.functions[name], params, 60 * 60 * 1000);
+        const result =  await subContext.bindToDurablePromise(this.functions[name], params, 60 * 60 * 1000);
+        return result;
     }
 
     recover() {

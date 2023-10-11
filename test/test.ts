@@ -5,6 +5,8 @@ import { app, stopServer } from '../src/index'; // Assuming your server setup is
 
 describe('Server Tests', () => {
     let server: supertest.SuperTest<supertest.Test>;
+    const url200s: Array<string> = [];
+    const url201s: Array<string> = [];
 
     before(() => {
         server = supertest(app);
@@ -30,22 +32,39 @@ describe('Server Tests', () => {
                     name: 'Bob',
                 })
                 .set('Content-Type', 'application/json');
-
+            if(response.status === 200) url200s.push(postUrl)
             assert.strictEqual(response.status, 200);
             assert.strictEqual(response.body.message.ikey.includes(ikey), true);
         };
 
-        // Create sayHello() calls
+        // Create sayGoodBye() calls
         for (let i = 0; i < numberOfReps; i++) {
             await makeRequestAndAssert(`/sayHello/`);
         }
+
 
         // Create sayGoodBye() calls
         for (let i = 0; i < numberOfReps; i++) {
             await makeRequestAndAssert(`/sayGoodbye/`);
         }
 
+        const replayRequestAndAssert = async () => {
+            for (let i = 0; i < url200s.length; i++) {
+                const response = await server
+                    .post(url200s[i])
+                    .send({
+                        name: 'Bob',
+                    })
+                    .set('Content-Type', 'application/json');
+                if(response.status===201) url201s.push(url200s[i])
+                assert.strictEqual(response.status, 201);
+                assert.strictEqual(url200s.length, url201s.length )
+            }
+        };
         //TODO: put in the replay logic and test therein
+        await replayRequestAndAssert()
+
+
     }).timeout(5000);
 
 
