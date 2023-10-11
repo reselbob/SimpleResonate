@@ -37,7 +37,7 @@ describe('Server Tests', () => {
             assert.strictEqual(response.body.message.ikey.includes(ikey), true);
         };
 
-        // Create sayGoodBye() calls
+        // Create sayHello() calls
         for (let i = 0; i < numberOfReps; i++) {
             await makeRequestAndAssert(`/sayHello/`);
         }
