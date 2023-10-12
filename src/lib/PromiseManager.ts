@@ -41,6 +41,8 @@ export class PromiseManager {
         if (data && data.param && data.param.data) {
             data.value = JSON.parse(atob(data.param.data));
         }
+
+        data.httpStatus =  response.status;
         return data;
     }
 

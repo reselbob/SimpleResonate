@@ -76,6 +76,7 @@ export class Context<T> {
         let resultPromise;
 
         if (createResponse.state === 'RESOLVED') {
+            createResponse.value.idempotentStatus = createResponse.httpStatus
             resultPromise = Promise.resolve(createResponse.value);
         } else if (createResponse.state === 'REJECTED') {
             resultPromise = Promise.reject(createResponse);
@@ -85,6 +86,7 @@ export class Context<T> {
                 const result = await func(this, args);
                 const resolveResponse = await this.resonateServer.resolvePromise(this.id, {ikey: this.id, data: result});
                 if(resolveResponse && resolveResponse.value){
+                    resolveResponse.value.idempotentStatus = createResponse.httpStatus
                     resultPromise = Promise.resolve(resolveResponse.value);
                 }else{
                     resultPromise = Promise.resolve();

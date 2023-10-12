@@ -91,7 +91,7 @@ resonate.registerModule(functions);
 
     try {
         let conf = await resonate.executeFunction(functionName, id, params);
-        res.status(200).json({ message: conf });
+        res.status(conf.idempotentStatus).json({ message: conf });
     } catch (error: any) {
         if(error.state !== 'REJECTED'){
             res.status(500).json({ error: "Something very wrong is happening" });

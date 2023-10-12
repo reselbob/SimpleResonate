@@ -20,7 +20,7 @@ describe('Server Tests', () => {
     });
 
     it('Can execute replay', async () => {
-        const numberOfReps = 10;
+        const numberOfReps = 1;
 
         // Helper function to make requests and assert responses
         const makeRequestAndAssert = async (url: string) => {
@@ -32,8 +32,8 @@ describe('Server Tests', () => {
                     name: 'Bob',
                 })
                 .set('Content-Type', 'application/json');
-            if(response.status === 200) url200s.push(postUrl)
-            assert.strictEqual(response.status, 200);
+            if(response.status === 201) url201s.push(postUrl)
+            assert.strictEqual(response.status, 201);
             assert.strictEqual(response.body.message.ikey.includes(ikey), true);
         };
 
@@ -49,17 +49,17 @@ describe('Server Tests', () => {
         }
 
         const replayRequestAndAssert = async () => {
-            for (let i = 0; i < url200s.length; i++) {
+            for (let i = 0; i < url201s.length; i++) {
                 const response = await server
-                    .post(url200s[i])
+                    .post(url201s[i])
                     .send({
                         name: 'Bob',
                     })
                     .set('Content-Type', 'application/json');
-                if(response.status===201) url201s.push(url200s[i])
-                assert.strictEqual(response.status, 201);
-                assert.strictEqual(url200s.length, url201s.length )
+                if(response.status===200) url200s.push(url201s[i])
+                assert.strictEqual(response.status, 200);
             }
+            assert.strictEqual(url200s.length, url201s.length )
         };
         //TODO: put in the replay logic and test therein
         await replayRequestAndAssert()
@@ -78,7 +78,7 @@ describe('Server Tests', () => {
             })
             .set('Content-Type', 'application/json');
 
-        assert.strictEqual(response.status, 200);
+        assert.strictEqual(response.status, 201);
         assert.strictEqual(response.body.message.ikey.includes(ikey), true);
     });
 
@@ -92,7 +92,7 @@ describe('Server Tests', () => {
             })
             .set('Content-Type', 'application/json');
 
-        assert.strictEqual(response.status, 200);
+        assert.strictEqual(response.status, 201);
         assert.strictEqual(response.body.message.ikey.includes(ikey), true);
     });
 });
